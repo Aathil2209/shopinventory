@@ -1,0 +1,498 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.nav{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.nav button{font-size:12px;padding:5px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer}
+.nav button.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
+.section{display:none}.section.active{display:block}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px}
+.metric-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.metric-value{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.metric-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+table{width:100%;font-size:12px;border-collapse:collapse;table-layout:fixed}
+th{text-align:left;color:var(--color-text-secondary);font-weight:500;padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:11px}
+td{padding:5px 8px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.badge-ok{background:#EAF3DE;color:#3B6D11}
+.badge-warn{background:#FAECE7;color:#993C1D}
+.badge-info{background:#E6F1FB;color:#185FA5}
+/* TOGGLE SWITCH */
+.toggle-wrap{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+.toggle{position:relative;width:38px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.slider{position:absolute;inset:0;background:#F7C1C1;border-radius:20px;transition:.2s}
+.slider:before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:#E24B4A;border-radius:50%;transition:.2s}
+.toggle input:checked+.slider{background:#C0DD97}
+.toggle input:checked+.slider:before{transform:translateX(18px);background:#3B6D11}
+.toggle-label{font-size:11px;font-weight:500;min-width:42px}
+.toggle-label.paid{color:#3B6D11}
+.toggle-label.unpaid{color:#993C1D}
+/* FORM */
+.form-panel{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:16px;margin-bottom:14px;border:0.5px solid var(--color-border-tertiary)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11px;color:var(--color-text-secondary)}
+.form-group input,.form-group select{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:7px 10px;font-size:12px;color:var(--color-text-primary);width:100%}
+.submit-btn{background:var(--color-text-primary);color:var(--color-background-primary);border:none;border-radius:20px;padding:8px 20px;font-size:12px;cursor:pointer;font-weight:500}
+.cancel-btn{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary);border-radius:20px;padding:8px 20px;font-size:12px;cursor:pointer}
+.add-btn{font-size:12px;padding:6px 16px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer}
+.del-btn{background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:13px;padding:0 4px}
+.del-btn:hover{color:#993C1D}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:500px){.two-col{grid-template-columns:1fr}}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
+.bar-label{width:90px;color:var(--color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.bar-track{flex:1;height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+.bar-val{width:45px;text-align:right;font-size:11px;color:var(--color-text-primary);flex-shrink:0}
+.ptabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.ptabs button{font-size:11px;padding:4px 12px;border-radius:16px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer}
+.ptabs button.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500}
+.ptab{display:none}.ptab.active{display:block}
+.sbox{border-radius:var(--border-radius-md);overflow:hidden;border:0.5px solid var(--color-border-tertiary);margin-bottom:14px}
+.srow{display:flex;justify-content:space-between;padding:8px 14px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px}
+.srow:last-child{border-bottom:none}
+.srow.hl{background:#EAF3DE;color:#3B6D11;font-weight:500}
+.srow.hd{background:var(--color-background-secondary);font-weight:500;font-size:12px;color:var(--color-text-secondary)}
+.unpaid-row{background:rgba(250,236,231,0.4)}
+</style>
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Stock dashboard with paid unpaid toggle</h2>
+
+<div style="padding:4px 0 16px">
+  <p style="font-size:11px;color:var(--color-text-tertiary)">Stock Management System</p>
+  <p style="font-size:20px;font-weight:500;color:var(--color-text-primary)">Inventory Dashboard</p>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="showTab('overview',this)">Overview</button>
+  <button onclick="showTab('sales',this)">Sales</button>
+  <button onclick="showTab('purchases',this)">Purchases</button>
+  <button onclick="showTab('inventory',this)">Inventory</button>
+  <button onclick="showTab('formula',this)">Formula</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="overview" class="section active">
+  <div class="metrics" id="ovMetrics"></div>
+  <div class="two-col">
+    <div class="card"><div class="card-title">Inventory status</div><div id="ovStatus"></div></div>
+    <div class="card"><div class="card-title">Margin by product</div><div id="ovMargin"></div></div>
+  </div>
+  <div class="card"><div class="card-title">Recent activity</div><div id="recentAct"></div></div>
+</div>
+
+<!-- SALES -->
+<div id="sales" class="section">
+  <div class="metrics" id="salesMetrics"></div>
+  <div id="saleFormWrap" style="display:none">
+    <div class="form-panel">
+      <div style="font-size:13px;font-weight:500;margin-bottom:14px">Add new sale</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Date & Time</label><input type="datetime-local" id="sDate"></div>
+        <div class="form-group"><label>Customer name</label><input type="text" id="sCust" placeholder="Name"></div>
+        <div class="form-group"><label>Product</label><select id="sProd" onchange="fillSalePrice()"><option value="">Select</option></select></div>
+        <div class="form-group"><label>Qty</label><input type="number" id="sQty" min="1" value="1" onchange="calcSaleTotal()"></div>
+        <div class="form-group"><label>Price (₹)</label><input type="number" id="sPrice" step="0.01" onchange="calcSaleTotal()"></div>
+        <div class="form-group"><label>Total (₹)</label><input type="number" id="sTotal" readonly style="opacity:0.7"></div>
+        <div class="form-group"><label>Payment method</label><select id="sPayMethod"><option>CASH</option><option>PHONE PAY</option><option>GPAY</option><option>CREDIT</option></select></div>
+        <div class="form-group"><label>Amount paid (₹)</label><input type="number" id="sAmtPaid" step="0.01" value="0" onchange="calcSaleBal()"></div>
+        <div class="form-group"><label>Balance (₹)</label><input type="number" id="sBal" readonly style="opacity:0.7"></div>
+        <div class="form-group"><label>Paid to (staff)</label><input type="text" id="sPaidTo" placeholder="Staff name"></div>
+      </div>
+      <div style="display:flex;gap:8px"><button class="submit-btn" onclick="addSale()">Save sale</button><button class="cancel-btn" onclick="document.getElementById('saleFormWrap').style.display='none'">Cancel</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">
+      <span>Sales log</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="salesFilter" onchange="renderSales()" style="font-size:11px;padding:4px 8px;border-radius:16px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary)">
+          <option value="all">All</option>
+          <option value="unpaid">Unpaid only</option>
+          <option value="paid">Paid only</option>
+        </select>
+        <button class="add-btn" onclick="openSaleForm()">+ Add sale</button>
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th style="width:15%">Date & Time</th>
+        <th style="width:13%">Customer</th>
+        <th style="width:12%">Product</th>
+        <th style="width:5%">Qty</th>
+        <th style="width:8%">Price</th>
+        <th style="width:8%">Total</th>
+        <th style="width:9%">Payment</th>
+        <th style="width:8%">Paid</th>
+        <th style="width:14%">Status</th>
+        <th style="width:8%">Del</th>
+      </tr></thead>
+      <tbody id="salesBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PURCHASES -->
+<div id="purchases" class="section">
+  <div class="metrics" id="purMetrics"></div>
+  <div id="purFormWrap" style="display:none">
+    <div class="form-panel">
+      <div style="font-size:13px;font-weight:500;margin-bottom:14px">Add new purchase</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Date & Time</label><input type="datetime-local" id="pDate"></div>
+        <div class="form-group"><label>Product</label><select id="pProd" onchange="fillPurPrice()"><option value="">Select</option></select></div>
+        <div class="form-group"><label>Qty</label><input type="number" id="pQty" min="1" value="1" onchange="calcPurTotal()"></div>
+        <div class="form-group"><label>Cost/unit (₹)</label><input type="number" id="pCost" step="0.01" onchange="calcPurTotal()"></div>
+        <div class="form-group"><label>Total (₹)</label><input type="number" id="pTotal" readonly style="opacity:0.7"></div>
+        <div class="form-group"><label>Supplier</label><input type="text" id="pSupplier" placeholder="Optional"></div>
+      </div>
+      <div style="display:flex;gap:8px"><button class="submit-btn" onclick="addPurchase()">Save purchase</button><button class="cancel-btn" onclick="document.getElementById('purFormWrap').style.display='none'">Cancel</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span>Purchase log</span><button class="add-btn" onclick="openPurForm()">+ Add purchase</button></div>
+    <table>
+      <thead><tr>
+        <th style="width:20%">Date & Time</th>
+        <th style="width:20%">Product</th>
+        <th style="width:18%">Category</th>
+        <th style="width:10%">Qty</th>
+        <th style="width:13%">Cost/unit</th>
+        <th style="width:12%">Total</th>
+        <th style="width:7%">Del</th>
+      </tr></thead>
+      <tbody id="purBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory" class="section">
+  <div class="card">
+    <div class="card-title">Current inventory</div>
+    <table>
+      <thead><tr><th style="width:8%">#</th><th style="width:20%">Product</th><th style="width:18%">Category</th><th style="width:11%">Purchased</th><th style="width:9%">Sold</th><th style="width:9%">Stock</th><th style="width:12%">Cost/unit</th><th style="width:11%">Value</th><th style="width:10%">Status</th></tr></thead>
+      <tbody id="invBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- FORMULA -->
+<div id="formula" class="section">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <div style="font-size:13px;font-weight:500">Formula editor</div>
+    <div style="display:flex;gap:6px">
+      <input type="text" id="newProdName" placeholder="New product name" style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 10px;font-size:12px;color:var(--color-text-primary);width:150px">
+      <button class="add-btn" onclick="addProduct()">+ Add product</button>
+    </div>
+  </div>
+  <div class="ptabs" id="prodTabs"></div>
+  <div id="prodPanels"></div>
+</div>
+
+<script>
+const products=[
+  {name:'SURFEXCEL',category:'DETERGENT',batchLitres:8,bottlePrice:5.25,sellingPrice:80,threshold:5,chemicals:[
+    {name:'CAUSTIC SODA',rate:90,qty:0.22},{name:'RO WATER',rate:2,qty:6},
+    {name:'ACID SLURRY',rate:150,qty:1},{name:'UREA',rate:30,qty:0.5},
+    {name:'SODIUM SULPHATE',rate:25,qty:0.1},{name:'TINOPAL',rate:30,qty:0.2},
+    {name:'COLOUR',rate:10,qty:0.1},{name:'CENT',rate:65,qty:1},
+    {name:'QUESTOL',rate:270,qty:0.3},{name:'SLES',rate:100,qty:0.3},
+    {name:'HPMC GEL',rate:15,qty:0.4},{name:'PHENOXY ETHANOL',rate:2500,qty:0.006},
+  ]},
+  {name:'VIM GEL',category:'DISH WASH LIQUID',batchLitres:10,bottlePrice:3,sellingPrice:40,threshold:4,chemicals:[
+    {name:'WATER',rate:2,qty:0.085},{name:'SLES',rate:2,qty:3.45},
+    {name:'SALT',rate:0.15,qty:0.4},{name:'CAUSTIC SODA',rate:90,qty:0.05},
+    {name:'COLOUR',rate:25,qty:0.1},{name:'EDTA',rate:60,qty:0.01},
+    {name:'PERFUME',rate:10,qty:0.5},{name:'COCAMIDE DEA',rate:0.05,qty:1.2},
+    {name:'CITRIC ACID',rate:200,qty:0.1},{name:'GLYCERINE',rate:100,qty:1.25},
+    {name:'PHENOXY ETHANOL',rate:2500,qty:0.005},
+  ]},
+];
+
+function cpu(p){return p.chemicals.reduce((s,c)=>s+c.rate*c.qty,0)/p.batchLitres;}
+function getProd(n){return products.find(p=>p.name===n);}
+function getStock(n){
+  const b=purLog.filter(r=>r.prod===n).reduce((s,r)=>s+r.qty,0);
+  const s=salesLog.filter(r=>r.prod===n).reduce((s,r)=>s+r.qty,0);
+  return b-s;
+}
+function fmtDT(d){return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'})+' '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}
+function nowInput(){const n=new Date(),p=x=>String(x).padStart(2,'0');return `${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())}T${p(n.getHours())}:${p(n.getMinutes())}`;}
+function pastDT(d,h=10,m=0){const dt=new Date();dt.setDate(dt.getDate()-d);dt.setHours(h,m,0);return dt;}
+
+const salesLog=[
+  {dt:pastDT(167,10,0),cust:'SHAMIM',prod:'SURFEXCEL',qty:3,price:80,total:240,pay:'CASH',paid:300,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(167,11,0),cust:'RIZWANA',prod:'SURFEXCEL',qty:2,price:80,total:160,pay:'CASH',paid:160,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(166,9,30),cust:'SAJI',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'PHONE PAY',paid:80,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(166,9,45),cust:'SAJI',prod:'VIM GEL',qty:1,price:40,total:40,pay:'PHONE PAY',paid:40,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(166,14,0),cust:'NASRIN',prod:'SURFEXCEL',qty:2,price:80,total:160,pay:'CASH',paid:160,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(165,10,0),cust:'RAMISHA',prod:'SURFEXCEL',qty:2,price:80,total:160,pay:'CASH',paid:160,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(165,11,0),cust:'RAMISHA',prod:'VIM GEL',qty:2,price:40,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(163,10,0),cust:'NISHA',prod:'SURFEXCEL',qty:2,price:80,total:160,pay:'CASH',paid:160,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(157,9,0),cust:'DHEENA',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(155,10,0),cust:'SABAR',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'IMRAN'},
+  {dt:pastDT(155,10,30),cust:'SABAR',prod:'VIM GEL',qty:2,price:40,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'IMRAN'},
+  {dt:pastDT(154,11,0),cust:'SIDDHARTH',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'GPAY',paid:80,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(154,11,30),cust:'SIDDHARTH',prod:'VIM GEL',qty:1,price:40,total:40,pay:'GPAY',paid:40,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(154,15,0),cust:'GOWTHAM BRO',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(154,15,15),cust:'GOWTHAM BRO',prod:'VIM GEL',qty:1,price:40,total:40,pay:'CASH',paid:40,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(149,10,0),cust:'AJEEBA',prod:'SURFEXCEL',qty:3,price:80,total:240,pay:'PHONE PAY',paid:240,paidStatus:true,paidTo:'IMRAN'},
+  {dt:pastDT(149,10,15),cust:'AJEEBA',prod:'VIM GEL',qty:2,price:40,total:80,pay:'PHONE PAY',paid:80,paidStatus:true,paidTo:'IMRAN'},
+  {dt:pastDT(149,14,0),cust:'AFRIN',prod:'VIM GEL',qty:1,price:40,total:40,pay:'CREDIT',paid:0,paidStatus:false,paidTo:''},
+  {dt:pastDT(149,16,0),cust:'AATHIL',prod:'VIM GEL',qty:2,price:40,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(146,10,0),cust:'SHAMIM',prod:'SURFEXCEL',qty:4,price:80,total:320,pay:'CASH',paid:320,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(133,10,0),cust:'BAHARANI',prod:'SURFEXCEL',qty:3,price:80,total:240,pay:'CASH',paid:240,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(133,10,30),cust:'BAHARANI',prod:'VIM GEL',qty:1,price:40,total:40,pay:'CASH',paid:40,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(133,11,0),cust:'SIDDHARTH',prod:'VIM GEL',qty:1,price:40,total:40,pay:'CREDIT',paid:0,paidStatus:false,paidTo:''},
+  {dt:pastDT(132,9,0),cust:'NASRIN',prod:'SURFEXCEL',qty:2,price:80,total:160,pay:'CREDIT',paid:0,paidStatus:false,paidTo:''},
+  {dt:pastDT(132,10,0),cust:'KADAI',prod:'VIM GEL',qty:1,price:40,total:40,pay:'CASH',paid:40,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(132,11,0),cust:'RIZWANA',prod:'SURFEXCEL',qty:2,price:80,total:160,pay:'CASH',paid:160,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(132,11,30),cust:'RIZWANA',prod:'VIM GEL',qty:1,price:40,total:40,pay:'CASH',paid:40,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(132,14,0),cust:'KADAI',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(131,10,0),cust:'AJEEBA',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'CASH',paid:100,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(130,10,0),cust:'SABAR',prod:'VIM GEL',qty:2,price:40,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(129,10,0),cust:'YAKOOP',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(133,9,0),cust:'FATHIMA PERI',prod:'VIM GEL',qty:1,price:40,total:40,pay:'CASH',paid:40,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(133,9,30),cust:'AATHIL',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'AATHIL'},
+  {dt:pastDT(127,10,0),cust:'HAKKIM',prod:'SURFEXCEL',qty:2,price:80,total:160,pay:'CASH',paid:160,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(127,10,30),cust:'HAKKIM',prod:'VIM GEL',qty:2,price:40,total:80,pay:'CASH',paid:80,paidStatus:true,paidTo:'RASITHA'},
+  {dt:pastDT(127,14,0),cust:'BURKAN',prod:'SURFEXCEL',qty:1,price:80,total:80,pay:'CREDIT',paid:0,paidStatus:false,paidTo:''},
+];
+
+const purLog=[
+  {dt:pastDT(180,9,0),prod:'VIM GEL',qty:10,cost:34.465,total:344.65,supplier:''},
+  {dt:pastDT(169,10,0),prod:'SURFEXCEL',qty:10,cost:55.6625,total:556.625,supplier:''},
+  {dt:pastDT(169,10,30),prod:'VIM GEL',qty:4,cost:34.465,total:137.86,supplier:''},
+  {dt:pastDT(164,9,0),prod:'SURFEXCEL',qty:16,cost:55.6625,total:890.6,supplier:''},
+  {dt:pastDT(164,9,30),prod:'VIM GEL',qty:10,cost:34.465,total:344.65,supplier:''},
+  {dt:pastDT(149,8,0),prod:'SURFEXCEL',qty:8,cost:55.6625,total:445.3,supplier:''},
+  {dt:pastDT(128,9,0),prod:'SURFEXCEL',qty:17,cost:55.6625,total:946.2625,supplier:''},
+];
+
+function togglePaid(idx){
+  salesLog[idx].paidStatus=!salesLog[idx].paidStatus;
+  if(salesLog[idx].paidStatus){
+    salesLog[idx].paid=salesLog[idx].total;
+  } else {
+    salesLog[idx].paid=0;
+  }
+  renderSales();renderOverview();
+}
+
+function renderSales(){
+  const filter=document.getElementById('salesFilter').value;
+  const sorted=[...salesLog].map((r,i)=>({...r,_i:i})).sort((a,b)=>b.dt-a.dt);
+  const filtered=sorted.filter(r=>filter==='all'?true:filter==='paid'?r.paidStatus:!r.paidStatus);
+
+  const totalRev=salesLog.reduce((s,r)=>s+r.total,0);
+  const totalPending=salesLog.filter(r=>!r.paidStatus).reduce((s,r)=>s+r.total,0);
+  const totalMargin=salesLog.reduce((s,r)=>{const p=getProd(r.prod);return s+(r.total-(p?cpu(p)*r.qty:0));},0);
+  document.getElementById('salesMetrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Total revenue</div><div class="metric-value">₹${Math.round(totalRev).toLocaleString()}</div><div class="metric-sub">${salesLog.length} transactions</div></div>
+    <div class="metric"><div class="metric-label">Total margin</div><div class="metric-value">₹${Math.round(totalMargin).toLocaleString()}</div><div class="metric-sub">${totalRev>0?((totalMargin/totalRev)*100).toFixed(1):0}%</div></div>
+    <div class="metric"><div class="metric-label">Pending balance</div><div class="metric-value" style="color:${totalPending>0?'#993C1D':'inherit'}">₹${Math.round(totalPending)}</div><div class="metric-sub">${salesLog.filter(r=>!r.paidStatus).length} unpaid entries</div></div>
+  `;
+
+  const tbody=document.getElementById('salesBody');
+  tbody.innerHTML='';
+  filtered.forEach(r=>{
+    const i=r._i;
+    const tr=document.createElement('tr');
+    if(!r.paidStatus) tr.classList.add('unpaid-row');
+    tr.innerHTML=`
+      <td title="${fmtDT(r.dt)}">${fmtDT(r.dt)}</td>
+      <td>${r.cust}</td>
+      <td>${r.prod}</td>
+      <td>${r.qty}</td>
+      <td>₹${r.price}</td>
+      <td>₹${r.total}</td>
+      <td>${r.pay}</td>
+      <td>₹${r.paid}</td>
+      <td>
+        <label class="toggle-wrap" title="Click to toggle paid/unpaid">
+          <span class="toggle"><input type="checkbox" ${r.paidStatus?'checked':''} onchange="togglePaid(${i})"><span class="slider"></span></span>
+          <span class="toggle-label ${r.paidStatus?'paid':'unpaid'}">${r.paidStatus?'Paid':'Unpaid'}</span>
+        </label>
+      </td>
+      <td><button class="del-btn" onclick="if(confirm('Delete?')){salesLog.splice(${i},1);renderSales();renderOverview();renderInventory();}">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderPurchases(){
+  const totalInv=purLog.reduce((s,r)=>s+r.total,0);
+  document.getElementById('purMetrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Total invested</div><div class="metric-value">₹${Math.round(totalInv).toLocaleString()}</div><div class="metric-sub">${purLog.length} purchases</div></div>
+    ${products.map(p=>{const t=purLog.filter(r=>r.prod===p.name).reduce((s,r)=>s+r.qty,0);return `<div class="metric"><div class="metric-label">${p.name}</div><div class="metric-value">${t} units</div></div>`;}).join('')}
+  `;
+  const tbody=document.getElementById('purBody');
+  tbody.innerHTML='';
+  [...purLog].sort((a,b)=>b.dt-a.dt).forEach((r,_)=>{
+    const orig=purLog.indexOf(r);
+    const p=getProd(r.prod);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${fmtDT(r.dt)}</td><td>${r.prod}</td><td>${p?p.category:''}</td><td>${r.qty}</td><td>₹${r.cost.toFixed(4)}</td><td>₹${r.total.toFixed(2)}</td><td><button class="del-btn" onclick="if(confirm('Delete?')){purLog.splice(${orig},1);renderPurchases();renderOverview();renderInventory();}">✕</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderInventory(){
+  const tbody=document.getElementById('invBody');
+  tbody.innerHTML='';
+  products.forEach((p,i)=>{
+    const b=purLog.filter(r=>r.prod===p.name).reduce((s,r)=>s+r.qty,0);
+    const s=salesLog.filter(r=>r.prod===p.name).reduce((s,r)=>s+r.qty,0);
+    const st=b-s; const c=cpu(p); const ok=st>=p.threshold;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${i+1}</td><td>${p.name}</td><td>${p.category}</td><td>${b}</td><td>${s}</td><td style="font-weight:500;color:${!ok?'#993C1D':'inherit'}">${st}</td><td>₹${c.toFixed(2)}</td><td>₹${(c*st).toFixed(2)}</td><td><span class="badge ${ok?'badge-ok':'badge-warn'}">${ok?'OK':'Reorder'}</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderOverview(){
+  const tv=products.reduce((s,p)=>s+cpu(p)*getStock(p.name),0);
+  const tb=purLog.reduce((s,r)=>s+r.qty,0);
+  const ts=salesLog.reduce((s,r)=>s+r.qty,0);
+  const tr=salesLog.reduce((s,r)=>s+r.total,0);
+  document.getElementById('ovMetrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Stock value</div><div class="metric-value">₹${Math.round(tv).toLocaleString()}</div></div>
+    <div class="metric"><div class="metric-label">Total purchased</div><div class="metric-value">${tb} units</div></div>
+    <div class="metric"><div class="metric-label">Total sold</div><div class="metric-value">${ts} units</div><div class="metric-sub">₹${Math.round(tr).toLocaleString()}</div></div>
+    <div class="metric"><div class="metric-label">End inventory</div><div class="metric-value">${tb-ts} units</div></div>
+  `;
+  document.getElementById('ovStatus').innerHTML=products.map(p=>{
+    const st=getStock(p.name);const ok=st>=p.threshold;
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px"><span>${p.name}</span><span class="badge ${ok?'badge-ok':'badge-warn'}">${st} in stock${!ok?' ⚠':''}</span></div>`;
+  }).join('');
+  const maxM=Math.max(...products.map(p=>p.sellingPrice-cpu(p)-p.bottlePrice),1);
+  document.getElementById('ovMargin').innerHTML=products.map(p=>{
+    const m=p.sellingPrice-cpu(p)-p.bottlePrice;
+    const pct=p.sellingPrice>0?((m/p.sellingPrice)*100).toFixed(1):0;
+    return `<div class="bar-row"><span class="bar-label">${p.name}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round((m/maxM)*100)}%;background:#3B6D11"></div></div><span class="bar-val">${pct}%</span></div>`;
+  }).join('');
+
+  const activity=[
+    ...salesLog.map(r=>({dt:r.dt,type:'sale',desc:`${r.cust} — ${r.prod} ×${r.qty}`,amt:'₹'+r.total,paid:r.paidStatus})),
+    ...purLog.map(r=>({dt:r.dt,type:'purchase',desc:`Purchased ${r.prod} ×${r.qty}`,amt:'₹'+r.total.toFixed(0),paid:true}))
+  ].sort((a,b)=>b.dt-a.dt).slice(0,8);
+  document.getElementById('recentAct').innerHTML=activity.map(a=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="badge ${a.type==='sale'?'badge-ok':'badge-info'}" style="min-width:58px;text-align:center">${a.type==='sale'?'Sale':'Purchase'}</span>
+        <span>${a.desc}</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <span style="font-weight:500">${a.amt}</span>
+        ${a.type==='sale'?`<span class="badge ${a.paid?'badge-ok':'badge-warn'}">${a.paid?'Paid':'Unpaid'}</span>`:''}
+        <span style="color:var(--color-text-tertiary);font-size:11px">${fmtDT(a.dt)}</span>
+      </div>
+    </div>`).join('');
+}
+
+function populateSelects(){
+  ['sProd','pProd'].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">Select</option>'+products.map(p=>`<option value="${p.name}">${p.name}</option>`).join('');
+    if(cur)sel.value=cur;
+  });
+}
+function openSaleForm(){
+  populateSelects();
+  document.getElementById('sDate').value=nowInput();
+  ['sCust','sPrice','sTotal','sAmtPaid','sBal','sPaidTo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sQty').value=1;
+  document.getElementById('saleFormWrap').style.display='block';
+  document.getElementById('saleFormWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function fillSalePrice(){const p=getProd(document.getElementById('sProd').value);if(p){document.getElementById('sPrice').value=p.sellingPrice;calcSaleTotal();}}
+function calcSaleTotal(){const q=parseFloat(document.getElementById('sQty').value)||0,pr=parseFloat(document.getElementById('sPrice').value)||0;document.getElementById('sTotal').value=(q*pr).toFixed(2);calcSaleBal();}
+function calcSaleBal(){const t=parseFloat(document.getElementById('sTotal').value)||0,pa=parseFloat(document.getElementById('sAmtPaid').value)||0;document.getElementById('sBal').value=(pa-t).toFixed(2);}
+function addSale(){
+  const dt=document.getElementById('sDate').value,cust=document.getElementById('sCust').value.trim(),prod=document.getElementById('sProd').value;
+  const qty=parseFloat(document.getElementById('sQty').value)||0,price=parseFloat(document.getElementById('sPrice').value)||0;
+  if(!dt||!cust||!prod||qty<=0||price<=0){alert('Please fill all required fields.');return;}
+  const total=qty*price,paid=parseFloat(document.getElementById('sAmtPaid').value)||0;
+  const paidStatus=paid>=total;
+  salesLog.unshift({dt:new Date(dt),cust:cust.toUpperCase(),prod,qty,price,total,pay:document.getElementById('sPayMethod').value,paid,paidStatus,paidTo:document.getElementById('sPaidTo').value.toUpperCase()});
+  document.getElementById('saleFormWrap').style.display='none';
+  renderSales();renderOverview();renderInventory();
+}
+function openPurForm(){
+  populateSelects();
+  document.getElementById('pDate').value=nowInput();
+  ['pCost','pTotal','pSupplier'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pQty').value=1;
+  document.getElementById('purFormWrap').style.display='block';
+  document.getElementById('purFormWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function fillPurPrice(){const p=getProd(document.getElementById('pProd').value);if(p){document.getElementById('pCost').value=cpu(p).toFixed(4);calcPurTotal();}}
+function calcPurTotal(){const q=parseFloat(document.getElementById('pQty').value)||0,c=parseFloat(document.getElementById('pCost').value)||0;document.getElementById('pTotal').value=(q*c).toFixed(2);}
+function addPurchase(){
+  const dt=document.getElementById('pDate').value,prod=document.getElementById('pProd').value;
+  const qty=parseFloat(document.getElementById('pQty').value)||0,cost=parseFloat(document.getElementById('pCost').value)||0;
+  if(!dt||!prod||qty<=0||cost<=0){alert('Please fill required fields.');return;}
+  purLog.unshift({dt:new Date(dt),prod,qty,cost,total:qty*cost,supplier:document.getElementById('pSupplier').value.toUpperCase()});
+  document.getElementById('purFormWrap').style.display='none';
+  renderPurchases();renderOverview();renderInventory();
+}
+
+function renderFormula(){
+  const tabs=document.getElementById('prodTabs'),panels=document.getElementById('prodPanels');
+  const ai=parseInt(tabs.dataset.active||0);
+  tabs.innerHTML='';panels.innerHTML='';
+  products.forEach((p,i)=>{
+    const btn=document.createElement('button');btn.textContent=p.name;
+    if(i===ai)btn.classList.add('active');
+    btn.onclick=()=>{tabs.dataset.active=i;renderFormula();};tabs.appendChild(btn);
+    const total=p.chemicals.reduce((s,c)=>s+c.rate*c.qty,0);
+    const c=total/p.batchLitres,profit=p.sellingPrice-c-p.bottlePrice;
+    const panel=document.createElement('div');panel.className='ptab'+(i===ai?' active':'');
+    panel.innerHTML=`<div class="sbox"><div class="srow hd"><span>Batch summary</span></div>
+      <div class="srow"><span>Batch size</span><span><input type="number" value="${p.batchLitres}" style="width:65px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:4px;padding:3px 6px;font-size:12px;color:var(--color-text-primary);text-align:right" onchange="products[${i}].batchLitres=parseFloat(this.value)||1;renderFormula();renderOverview();renderInventory()"> L</span></div>
+      <div class="srow"><span>Total manufacture cost</span><span>₹${total.toFixed(4)}</span></div>
+      <div class="srow"><span>Cost per litre</span><span>₹${c.toFixed(4)}</span></div>
+      <div class="srow"><span>Bottle price</span><span><input type="number" value="${p.bottlePrice}" step="0.01" style="width:65px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:4px;padding:3px 6px;font-size:12px;color:var(--color-text-primary);text-align:right" onchange="products[${i}].bottlePrice=parseFloat(this.value)||0;renderFormula();renderOverview();renderInventory()"> ₹</span></div>
+      <div class="srow"><span>Selling price</span><span><input type="number" value="${p.sellingPrice}" step="1" style="width:65px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:4px;padding:3px 6px;font-size:12px;color:var(--color-text-primary);text-align:right" onchange="products[${i}].sellingPrice=parseFloat(this.value)||0;renderFormula();renderOverview();renderInventory()"> ₹</span></div>
+      <div class="srow hl"><span>Profit per litre</span><span>₹${profit.toFixed(4)}</span></div>
+      <div class="srow hl"><span>Profit per batch (${p.batchLitres}L)</span><span>₹${(profit*p.batchLitres).toFixed(2)}</span></div>
+    </div>
+    <div class="card"><div class="card-title" style="display:flex;align-items:center;justify-content:space-between"><span>Chemicals</span><button class="add-btn" onclick="products[${i}].chemicals.push({name:'NEW CHEM',rate:0,qty:0});renderFormula();renderOverview()">+ Add</button></div>
+    <table><thead><tr><th style="width:28%">Chemical</th><th style="width:18%">Rate/kg (₹)</th><th style="width:16%">Qty (kg)</th><th style="width:14%">Gram</th><th style="width:16%">Price (₹)</th><th style="width:8%">Del</th></tr></thead><tbody>
+    ${p.chemicals.map((c,j)=>`<tr>
+      <td><input type="text" value="${c.name}" style="width:100%;background:transparent;border:none;font-size:12px;color:var(--color-text-primary)" onchange="products[${i}].chemicals[${j}].name=this.value"></td>
+      <td><input type="number" value="${c.rate}" step="0.01" style="width:100%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:4px;padding:2px 5px;font-size:12px;color:var(--color-text-primary);text-align:right" onchange="products[${i}].chemicals[${j}].rate=parseFloat(this.value)||0;renderFormula();renderOverview();renderInventory()"></td>
+      <td><input type="number" value="${c.qty}" step="0.001" style="width:100%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:4px;padding:2px 5px;font-size:12px;color:var(--color-text-primary);text-align:right" onchange="products[${i}].chemicals[${j}].qty=parseFloat(this.value)||0;renderFormula();renderOverview();renderInventory()"></td>
+      <td style="text-align:right;color:var(--color-text-secondary)">${Math.round(c.qty*1000)}</td>
+      <td style="text-align:right;font-weight:500">₹${(c.rate*c.qty).toFixed(4)}</td>
+      <td style="text-align:center"><button class="del-btn" onclick="products[${i}].chemicals.splice(${j},1);renderFormula();renderOverview();renderInventory()">✕</button></td>
+    </tr>`).join('')}
+    <tr style="background:var(--color-background-secondary);font-weight:500"><td colspan="4" style="text-align:right;padding:6px 8px">Total (${p.batchLitres}L batch)</td><td style="text-align:right;padding:6px 8px">₹${total.toFixed(4)}</td><td></td></tr>
+    </tbody></table></div>`;
+    panels.appendChild(panel);
+  });
+}
+function addProduct(){
+  const nm=document.getElementById('newProdName').value.trim().toUpperCase();
+  if(!nm)return;
+  products.push({name:nm,category:'',batchLitres:1,bottlePrice:0,sellingPrice:0,threshold:5,chemicals:[]});
+  document.getElementById('newProdName').value='';
+  document.getElementById('prodTabs').dataset.active=products.length-1;
+  renderFormula();populateSelects();
+}
+function showTab(id,btn){
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');btn.classList.add('active');
+  if(id==='formula')renderFormula();
+}
+
+renderOverview();renderSales();renderPurchases();renderInventory();populateSelects();
+</script>
